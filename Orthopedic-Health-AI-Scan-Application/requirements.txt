@@ -6,9 +6,9 @@ fpdf
 ultralytics
 torch
 torchvision
+torchaudio
 werkzeug
 python-dotenv
 scikit-image
 matplotlib
 pandas
-torchaudio
