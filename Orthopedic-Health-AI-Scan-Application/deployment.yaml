@@ -1,9 +1,10 @@
+# Deployment for Flask App
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask-app-deployment
 spec:
-  replicas: 2
+  replicas: 3   # Increased replicas from 2 → 3 for better load handling
   selector:
     matchLabels:
       app: flask-app
@@ -14,18 +15,27 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: __IMAGE_NAME__
+        image: orthoai:latest   # Updated image name
         ports:
         - containerPort: 5000
+        resources:               # Added resource requests/limits
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
 ---
+# Service for Flask App
 apiVersion: v1
 kind: Service
 metadata:
   name: flask-app-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
   - port: 80
     targetPort: 5000
+    nodePort: 30007
   selector:
     app: flask-app
