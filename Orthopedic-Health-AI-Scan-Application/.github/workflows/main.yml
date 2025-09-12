@@ -51,14 +51,14 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest1 .
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest1
 
       - name: Push image with commit SHA (optional)
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}
-          docker tag ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:$IMAGE_TAG
+          docker tag ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest1 ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:$IMAGE_TAG
           docker push ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:$IMAGE_TAG
