@@ -44,7 +44,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest .
+          # 👇 Changed build context path (was '.' earlier)
+          # Your Dockerfile lives inside:
+          # Orthopedic-Health-AI-Scan-Application/Orthopedic-Health-AI-Scan-Application
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest ./Orthopedic-Health-AI-Scan-Application/Orthopedic-Health-AI-Scan-Application
 
   docker-push:
     runs-on: ubuntu-latest
@@ -61,10 +64,12 @@ jobs:
 
       - name: Push Docker image
         run: |
+          # 👇 This step is unchanged
           docker push ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest
-          
+
       - name: Push image with commit SHA
         run: |
+          # 👇 This step is unchanged too
           IMAGE_TAG=${GITHUB_SHA::7}
           docker tag ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:latest ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:$IMAGE_TAG
           docker push ${{ secrets.DOCKER_USERNAME }}/orthopedic-ai-app:$IMAGE_TAG
