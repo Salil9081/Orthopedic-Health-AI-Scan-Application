@@ -3,40 +3,43 @@ name: Docker Build and Push
 on:
   push:
     branches:
-      - main   # 🚀 Runs only when code is pushed to main branch
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   docker:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Setup job: Checkout code
+      # 1️⃣ Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Login to Docker Hub
+      # 2️⃣ Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}   # 👈 should be "srdeveloper9081"
+          username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 3️⃣ Build Docker image
+      # 3️⃣ Build Docker image (from root folder)
       - name: Build Docker image
         run: |
           docker build \
             -t srdeveloper9081/orthopedic-ai-app:latest \
-            -f Orthopedic-Health-AI-Scan-Application/Orthopedic-Health-AI-Scan-Application/Dockerfile \
-            Orthopedic-Health-AI-Scan-Application/Orthopedic-Health-AI-Scan-Application
+            -f Dockerfile \
+            .
 
       # 4️⃣ Push Docker image (latest tag)
       - name: Push Docker image (latest)
-        run: |
-          docker push srdeveloper9081/orthopedic-ai-app:latest
+        run: docker push srdeveloper9081/orthopedic-ai-app:latest
 
-      # 5️⃣ Push Docker image (with commit SHA tag)
+      # 5️⃣ Push Docker image with commit SHA tag
       - name: Push Docker image (commit SHA)
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}
           docker tag srdeveloper9081/orthopedic-ai-app:latest srdeveloper9081/orthopedic-ai-app:$IMAGE_TAG
           docker push srdeveloper9081/orthopedic-ai-app:$IMAGE_TAG
+
