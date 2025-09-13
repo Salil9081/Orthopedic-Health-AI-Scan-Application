@@ -39,7 +39,10 @@ jobs:
       # 4️⃣ Run SonarCloud Scan
       - name: SonarCloud Scan
         run: |
-          ${GITHUB_ACTION_PATH}/scripts/run-sonar-scanner-cli.sh \
+          # Make script executable
+          chmod +x ./scripts/run-sonar-scanner-cli.sh
+          # Run SonarScanner CLI
+          ./scripts/run-sonar-scanner-cli.sh \
             -Dsonar.projectKey=Salil9081_Orthopedic-Health-AI-Scan-Application \
             -Dsonar.organization=salil9081 \
             -Dsonar.python.version=3.11 \
@@ -69,4 +72,3 @@ jobs:
       - name: Push Docker image
         run: |
           docker push $IMAGE_NAME:latest
-
