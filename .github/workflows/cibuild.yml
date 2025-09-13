@@ -36,16 +36,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4️⃣ Run SonarCloud Scan
+      # 4️⃣ Run SonarCloud Scan (using official action ✅)
       - name: SonarCloud Scan
-        run: |
-          chmod +x ./scripts/run-sonar-scanner-cli.sh
-          ./scripts/run-sonar-scanner-cli.sh \
-            -Dsonar.projectKey=Salil9081_Orthopedic-Health-AI-Scan-Application \
-            -Dsonar.organization=salil9081 \
-            -Dsonar.python.version=3.11 \
-            -Dsonar.sources=. \
-            -Dsonar.login=$SONAR_TOKEN
+        uses: SonarSource/sonarcloud-github-action@v2.2.0
+        with:
+          args: >
+            -Dsonar.projectKey=Salil9081_Orthopedic-Health-AI-Scan-Application
+            -Dsonar.organization=salil9081
+            -Dsonar.python.version=3.11
+            -Dsonar.sources=.
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # 5️⃣ Docker login (disabled for now)
       # - name: Docker Login
@@ -59,7 +60,7 @@ jobs:
 
       # 7️⃣ Trivy Scan (using source code instead of Docker image for now)
       - name: Trivy Scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.16.1
         with:
           scan-type: 'fs'
           scan-ref: '.'
