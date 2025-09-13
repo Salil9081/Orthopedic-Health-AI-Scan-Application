@@ -21,8 +21,9 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }}   # Docker Hub username
+          password: ${{ secrets.DOCKER_PASSWORD }}   # Docker Hub password or access token
+          logout: true  # optional, logs out after job
 
       # 3️⃣ Build Docker image (from root folder)
       - name: Build Docker image
@@ -42,4 +43,3 @@ jobs:
           IMAGE_TAG=${GITHUB_SHA::7}
           docker tag srdeveloper9081/orthopedic-ai-app:latest srdeveloper9081/orthopedic-ai-app:$IMAGE_TAG
           docker push srdeveloper9081/orthopedic-ai-app:$IMAGE_TAG
-
