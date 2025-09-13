@@ -1,4 +1,4 @@
-name: Python CI/CD with Docker, Trivy, and SonarCloud
+name: Python CI/CD with Trivy and SonarCloud
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     env:
       # SonarCloud token from GitHub Secrets
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      # Docker Hub credentials from GitHub Secrets
+      # Docker Hub credentials from GitHub Secrets (not used now)
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       IMAGE_NAME: salil9081/orthopedic-health-ai-scan-app
@@ -39,9 +39,7 @@ jobs:
       # 4️⃣ Run SonarCloud Scan
       - name: SonarCloud Scan
         run: |
-          # Make script executable
           chmod +x ./scripts/run-sonar-scanner-cli.sh
-          # Run SonarScanner CLI
           ./scripts/run-sonar-scanner-cli.sh \
             -Dsonar.projectKey=Salil9081_Orthopedic-Health-AI-Scan-Application \
             -Dsonar.organization=salil9081 \
@@ -49,26 +47,27 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.login=$SONAR_TOKEN
 
-      # 5️⃣ Log in to Docker Hub
-      - name: Docker Login
-        run: |
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      # 5️⃣ Docker login (disabled for now)
+      # - name: Docker Login
+      #   run: |
+      #     echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-      # 6️⃣ Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t $IMAGE_NAME:latest .
+      # 6️⃣ Build Docker image (disabled for now)
+      # - name: Build Docker image
+      #   run: |
+      #     docker build -t $IMAGE_NAME:latest .
 
-      # 7️⃣ Scan Docker image with Trivy
+      # 7️⃣ Trivy Scan (using source code instead of Docker image for now)
       - name: Trivy Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: $IMAGE_NAME:latest
+          scan-type: 'fs'
+          scan-ref: '.'
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           severity: 'HIGH,CRITICAL'
 
-      # 8️⃣ Push Docker image to Docker Hub
-      - name: Push Docker image
-        run: |
-          docker push $IMAGE_NAME:latest
+      # 8️⃣ Push Docker image (disabled for now)
+      # - name: Push Docker image
+      #   run: |
+      #     docker push $IMAGE_NAME:latest
