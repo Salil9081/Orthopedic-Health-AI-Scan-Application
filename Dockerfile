@@ -16,14 +16,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies (CPU-only PyTorch for smaller size)
-RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu \
-    && pip install --no-cache-dir -r requirements.txt --no-deps \
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir -r requirements.txt \
     && pip check
 
 # =========================
 # Stage 2: Final Stage (Distroless)
 # =========================
-FROM gcr.io/distroless/python3:latest
+FROM gcr.io/distroless/python3:3.9
 
 WORKDIR /app
 
@@ -34,8 +35,9 @@ COPY --from=builder /usr/local /usr/local
 COPY run.py .
 COPY app/ ./app
 
-# Expose the port (Distroless doesn’t support CMD shell, must use exec form)
+# Expose the port
 EXPOSE 5000
 
-# Start the app
-CMD ["run.py"]
+# Start the app (distroless requires exec form)
+CMD ["python", "run.py"]
+
