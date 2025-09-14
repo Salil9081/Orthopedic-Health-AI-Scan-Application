@@ -24,7 +24,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # =========================
 # Stage 2: Final Stage (Distroless)
 # =========================
-FROM gcr.io/distroless/python3:3.9
+FROM gcr.io/distroless/python3
 
 WORKDIR /app
 
