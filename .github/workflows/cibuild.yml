@@ -17,7 +17,7 @@ jobs:
       # Docker Hub credentials from GitHub Secrets
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      IMAGE_NAME: srdeveloper9081/orthopedic-health-ai
+      IMAGE_NAME: srdeveloper9081/orthopedic-ai-app
 
     steps:
       # 1️⃣ Checkout code
@@ -53,12 +53,12 @@ jobs:
         run: |
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-      # 6️⃣ Build Docker image
+      # 6️⃣ Build Docker image (with latest + commit SHA tag)
       - name: Build Docker image
         run: |
-          docker build -t $IMAGE_NAME:latest .
+          docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:${{ github.sha }} .
 
-      # 7️⃣ Trivy Scan (filesystem scan for now)
+      # 7️⃣ Trivy Scan (scan filesystem for now)
       - name: Trivy Scan
         uses: aquasecurity/trivy-action@0.16.1
         with:
@@ -72,3 +72,4 @@ jobs:
       - name: Push Docker image
         run: |
           docker push $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:${{ github.sha }}
