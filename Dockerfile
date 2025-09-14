@@ -1,35 +1,41 @@
-# --- Stage 1: Build Environment ---
+# =========================
+# Stage 1: Build Stage
+# =========================
 FROM python:3.9-slim as builder
 
 WORKDIR /app
+
+# Copy only requirements first (better caching)
 COPY requirements.txt .
 
-# 🔹 Added system dependencies for PyTorch & OpenCV
-# - gcc: needed to compile some Python packages
-# - libgl1 & libglib2.0-0: needed by OpenCV for image/video processing
-RUN apt-get update && apt-get install -y \
+# Install system dependencies needed for building Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    libgl1 \
-    libglib2.0-0 \
-    && pip install --no-cache-dir -r requirements.txt
-
-# --- Stage 2: Final Production Image ---
-FROM python:3.9-slim
-
-# 🔹 Only keep runtime libraries (lighter than builder stage)
-RUN apt-get update && apt-get install -y \
     libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Python dependencies (CPU-only PyTorch for smaller size)
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir -r requirements.txt --no-deps \
+    && pip check
+
+# =========================
+# Stage 2: Final Stage (Distroless)
+# =========================
+FROM gcr.io/distroless/python3:latest
+
 WORKDIR /app
 
-# 🔹 Copy already-built Python packages from builder (saves rebuild time)
+# Copy installed Python packages from builder
 COPY --from=builder /usr/local /usr/local
 
-# Copy app source code
-COPY . .
+# Copy application code
+COPY run.py .
+COPY app/ ./app
 
+# Expose the port (Distroless doesn’t support CMD shell, must use exec form)
 EXPOSE 5000
 
-CMD ["python", "run.py"]
+# Start the app
+CMD ["run.py"]
