@@ -14,7 +14,7 @@ jobs:
     env:
       # SonarCloud token from GitHub Secrets
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      # Docker Hub credentials from GitHub Secrets (not used now)
+      # Docker Hub credentials from GitHub Secrets
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       IMAGE_NAME: salil9081/orthopedic-health-ai-scan-app
@@ -48,17 +48,17 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # 5️⃣ Docker login (disabled for now)
-      # - name: Docker Login
-      #   run: |
-      #     echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      # 5️⃣ Docker login
+      - name: Docker Login
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
-      # 6️⃣ Build Docker image (disabled for now)
-      # - name: Build Docker image
-      #   run: |
-      #     docker build -t $IMAGE_NAME:latest .
+      # 6️⃣ Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t $IMAGE_NAME:latest3 .
 
-      # 7️⃣ Trivy Scan (using source code instead of Docker image for now)
+      # 7️⃣ Trivy Scan (scan filesystem for now)
       - name: Trivy Scan
         uses: aquasecurity/trivy-action@0.16.1
         with:
@@ -68,7 +68,7 @@ jobs:
           exit-code: '0'
           severity: 'HIGH,CRITICAL'
 
-      # 8️⃣ Push Docker image (disabled for now)
-      # - name: Push Docker image
-      #   run: |
-      #     docker push $IMAGE_NAME:latest
+      # 8️⃣ Push Docker image
+      - name: Push Docker image
+        run: |
+          docker push $IMAGE_NAME:latest3
