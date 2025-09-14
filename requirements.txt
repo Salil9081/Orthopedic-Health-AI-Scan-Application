@@ -1,6 +1,6 @@
 flask
 opencv-python
-numpy
+numpy<2.3.0,>=2.0.0
 Pillow
 fpdf
 ultralytics
